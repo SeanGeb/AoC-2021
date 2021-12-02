@@ -1,29 +1,20 @@
-incrs(_, [], 0).
-incrs(Prev, [H|T], Result) :- H =< Prev, incrs(H, T, Result).
-incrs(Prev, [H|T], Result) :- H > Prev, incrs(H, T, NextResult), Result is NextResult + 1.
+solve1([], S, S).
+solve1([_], S, S).
+solve1([H1,H2|T], S, R) :- H1 < H2, SNew is S + 1, solve1([H2|T], SNew, R).
+solve1([H1,H2|T], S, R) :- H1 >= H2, solve1([H2|T], S, R).
 
-% Unifies a list with the number of times, for each pair of adjacent
-% elements (A, B), that B > A.
-solve1([], 0).
-solve1([H|T], Result) :- incrs(H, T, Result).
+% Problem is a list of numbers
+% Solution is the number of times Problem[i+1] > Problem[i]
+solve1(Problem, Solution) :- solve1(Problem, 0, Solution).
 
+solve2([], S, S).
+solve2([_], S, S).
+solve2([_, _], S, S).
+solve2([_, _, _], S, S).
+solve2([H1,H2,H3,H4|T], S, R) :- (H1+H2+H3) < (H2+H3+H4), SNew is S + 1, solve2([H2,H3,H4|T], SNew, R).
+solve2([H1,H2,H3,H4|T], S, R) :- (H1+H2+H3) >= (H2+H3+H4), solve2([H2,H3,H4|T], S, R).
 
-incrs3(_, [], 0).
-incrs3(_, [_], 0).
-incrs3(_, [_, _], 0).
-incrs3(Prev, [H1, H2, H3 | T], R) :-
-    New is H1 + H2 + H3,
-    New =< Prev,
-    incrs3(New, [H2, H3 | T], R).
-incrs3(Prev, [H1, H2, H3 | T], R) :-
-    New is H1 + H2 + H3,
-    New > Prev,
-    incrs3(New, [H2, H3 | T], Rn),
-    R is Rn + 1.
-
-% Unifies a list with the number of times, for each run of four adjacent
-% elements (A, B, C, D), that B+C+D > A+B+C.
-solve2([], 0).
-solve2([_], 0).
-solve2([_, _], 0).
-solve2([H1, H2, H3 | T], R) :- N is H1 + H2 + H3, incrs3(N, [H2, H3 | T], R).
+% Problem is a list of numbers
+% Solution is the number of times sum(Problem[i+1..i+3]) >
+% sum(Problem[i..i+2])
+solve2(Problem, Solution) :- solve2(Problem, 0, Solution).

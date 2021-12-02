@@ -1,21 +1,17 @@
-where([], 0, 0).
-where([forward(N)|T], F, D) :- where(T, NewF, D   ), F is NewF + N.
-where([down(N)   |T], F, D) :- where(T,    F, NewD), D is NewD + N.
-where([up(N)     |T], F, D) :- where(T,    F, NewD), D is NewD - N.
+solve1([            ], F, D, R) :- R is F * D.
+solve1([forward(N)|T], F, D, R) :- NewF is F + N, solve1(T, NewF, D, R).
+solve1([down(N)   |T], F, D, R) :- NewD is D + N, solve1(T, F, NewD, R).
+solve1([up(N)     |T], F, D, R) :- NewD is D - N, solve1(T, F, NewD, R).
 
-solve1(Course, Solution) :- where(Course, F, D), Solution is F * D.
+% Course is a series of forward/up/down N commands
+% Solution is (final horizontal position * final depth)
+solve1(Course, Solution) :- solve1(Course, 0, 0, Solution).
 
-where([], 0, 0, _).
-where([forward(N)|T], F, D, Aim) :-
-    where(T, NewF, NewD, Aim),
-    F is NewF + N,
-    D is NewD + (Aim * N).
-where([down(N)|T], F, D, Aim) :-
-    NewAim is Aim + N,
-    where(T, F, D, NewAim).
-where([up(N)|T], F, D, Aim) :-
-    NewAim is Aim - N,
-    where(T, F, D, NewAim).
+solve2([            ], F, D, _, R) :- R is F * D.
+solve2([forward(N)|T], F, D, A, R) :- NewF is F + N, NewD is D + (A * N), solve2(T, NewF, NewD, A, R).
+solve2([down(N)   |T], F, D, A, R) :- NewA is A + N, solve2(T, F, D, NewA, R).
+solve2([up(N)     |T], F, D, A, R) :- NewA is A - N, solve2(T, F, D, NewA, R).
 
-solve2(Course, Solution) :- where(Course, F, D, 0), Solution is F * D.
+% Course and Solution are as solve1/2, but considers the submarine's Aim parameter
+solve2(Course, Solution) :- solve2(Course, 0, 0, 0, Solution).
 
